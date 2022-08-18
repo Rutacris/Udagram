@@ -28,16 +28,17 @@ import { filterImageFromURL, deleteLocalFiles } from "./util/util";
 
   /**************************************************************************** */
   app.get("/filteredimage/", async (req, res) => {
-    let { url_ } = req.query;
-    const image_url:string = String(url_);
+    let { image_url } = req.query;
+    // const image_url:string = String(url_);
     if (!image_url) {
       return res.status(400).send(`Image url is required`);
     }
-    if (!validURL(image_url)) {
-      return res.status(401).send(`Image url is invalid`);
-    }
+   
+    // if (!validURL(image_url)) {
+    //   return res.status(401).send(`Image url is invalid`);
+    // }
     try {
-      var filteredpath = await filterImageFromURL(image_url);
+      var filteredpath = await filterImageFromURL(String(image_url));
       res.status(200).sendFile(filteredpath, (error) => {
         if (error) {
           res.sendStatus(500).send(`Failed to send the image, error:${error}`);
@@ -65,12 +66,7 @@ import { filterImageFromURL, deleteLocalFiles } from "./util/util";
 
   var validURL = (str: any) => {
     var pattern = new RegExp(
-      "^(https?:\\/\\/)?" + // protocol
-        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-        "(\\#[-a-z\\d_]*)?$",
+      "^(?:(?:https?|ftp):\/\/)(?:\S+(?::\S*)?@)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,}))\.?)(?::\d{2,5})?(?:[/?#]\S*)?$/i",
       "i"
     ); // fragment locator
     return !!pattern.test(str);
